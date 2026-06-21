@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Liderazgo Millonario</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --gold:    #C9A84C;
+    --gold-lt: #E8C96A;
+    --obsidian:#0B0C0E;
+    --surface: #111318;
+    --card:    #181B22;
+    --border:  #2A2D38;
+    --text:    #E8E6E0;
+    --muted:   #7A7D8A;
+    --white:   #FFFFFF;
+  }
+
+  html, body {
+    height: 100%;
+    background: var(--obsidian);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* ── BACKGROUND TEXTURE ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% -10%, rgba(201,168,76,.12) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 40% at 90% 90%, rgba(201,168,76,.06) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── LAYOUT ── */
+  .app {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px 60px;
+    max-width: 780px;
+    margin: 0 auto;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+
+  .eyebrow {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 16px;
+    display: block;
+  }
+
+  .title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(36px, 6vw, 64px);
+    font-weight: 900;
+    line-height: 1.05;
+    color: var(--white);
+    margin-bottom: 12px;
+    letter-spacing: -1px;
+  }
+
+  .title span {
+    color: var(--gold);
+  }
+
+  .subtitle {
+    font-size: 15px;
+    color: var(--muted);
+    font-weight: 300;
+    max-width: 440px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  /* ── LESSON CARD ── */
+  .card-wrap {
+    width: 100%;
+    perspective: 1200px;
+    margin-bottom: 36px;
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 48px 44px;
+    position: relative;
+    overflow: hidden;
+    transition: transform .6s ease, opacity .4s ease;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+
+  .card.flipping {
+    transform: rotateY(90deg);
+    opacity: 0;
+  }
+
+  /* Quote mark decorative */
+  .card-deco {
+    font-family: 'Playfair Display', serif;
+    font-size: 160px;
+    color: rgba(201,168,76,.08);
+    position: absolute;
+    top: -20px;
+    left: 20px;
+    line-height: 1;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .lesson-category {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .lesson-category::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .lesson-text {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(20px, 3.5vw, 28px);
+    font-weight: 400;
+    line-height: 1.55;
+    color: var(--white);
+    margin-bottom: 32px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .lesson-application {
+    background: rgba(201,168,76,.07);
+    border-left: 3px solid var(--gold);
+    border-radius: 0 10px 10px 0;
+    padding: 16px 20px;
+    margin-bottom: 28px;
+    font-size: 14px;
+    color: var(--text);
+    line-height: 1.65;
+  }
+
+  .lesson-application strong {
+    color: var(--gold);
+    font-weight: 600;
+    display: block;
+    margin-bottom: 4px;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .book-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 8px 16px;
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 500;
+  }
+
+  .book-badge .dot {
+    width: 6px; height: 6px;
+    background: var(--gold);
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* ── COUNTER ── */
+  .counter-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: 24px;
+  }
+
+  .counter {
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 500;
+  }
+
+  .counter strong {
+    color: var(--gold);
+    font-size: 16px;
+    font-weight: 700;
+    font-family: 'Playfair Display', serif;
+  }
+
+  .streak {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .streak-fire {
+    font-size: 16px;
+  }
+
+  /* ── CTA BUTTON ── */
+  .btn-main {
+    width: 100%;
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-lt) 100%);
+    color: var(--obsidian);
+    border: none;
+    border-radius: 14px;
+    padding: 20px 32px;
+    font-size: 16px;
+    font-weight: 700;
+    font-family: 'Inter', sans-serif;
+    letter-spacing: .5px;
+    cursor: pointer;
+    transition: transform .15s ease, box-shadow .15s ease, opacity .15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    box-shadow: 0 8px 32px rgba(201,168,76,.25);
+    margin-bottom: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-main::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255,255,255,.15);
+    opacity: 0;
+    transition: opacity .2s;
+  }
+
+  .btn-main:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(201,168,76,.35); }
+  .btn-main:hover::after { opacity: 1; }
+  .btn-main:active { transform: translateY(0); }
+  .btn-main:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+
+  .btn-icon { font-size: 20px; }
+
+  /* ── LOADING SKELETON ── */
+  .skeleton {
+    background: linear-gradient(90deg, var(--border) 25%, #2E3240 50%, var(--border) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s infinite;
+    border-radius: 8px;
+  }
+
+  @keyframes shimmer {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  .sk-line { height: 16px; margin-bottom: 12px; }
+  .sk-line.lg { height: 28px; }
+  .sk-line.short { width: 60%; }
+
+  /* ── LOADING STATE ── */
+  .loading-state { display: none; }
+  .loading-state.active { display: block; }
+  .content-state { display: block; }
+  .content-state.hidden { display: none; }
+
+  /* ── LOADING SPINNER in btn ── */
+  .spinner {
+    width: 18px; height: 18px;
+    border: 2px solid rgba(0,0,0,.3);
+    border-top-color: var(--obsidian);
+    border-radius: 50%;
+    animation: spin .7s linear infinite;
+    flex-shrink: 0;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── BOOKS GRID ── */
+  .books-section {
+    width: 100%;
+    margin-top: 48px;
+  }
+
+  .section-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 20px;
+    text-align: center;
+  }
+
+  .books-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 10px;
+  }
+
+  .book-item {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-size: 12px;
+    color: var(--muted);
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    transition: border-color .2s, color .2s;
+  }
+
+  .book-item:hover { border-color: var(--gold); color: var(--text); }
+
+  .book-num {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    color: var(--gold);
+    font-size: 13px;
+    flex-shrink: 0;
+    line-height: 1.4;
+  }
+
+  .book-name { line-height: 1.5; }
+
+  /* ── FOOTER ── */
+  .footer {
+    margin-top: 56px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.8;
+  }
+
+  .footer-gold { color: var(--gold); font-weight: 600; }
+
+  /* ── ERROR STATE ── */
+  .error-msg {
+    background: rgba(220,50,50,.1);
+    border: 1px solid rgba(220,50,50,.3);
+    border-radius: 12px;
+    padding: 20px 24px;
+    color: #FF7070;
+    font-size: 14px;
+    text-align: center;
+    line-height: 1.6;
+    display: none;
+  }
+  .error-msg.show { display: block; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 520px) {
+    .card { padding: 32px 24px; }
+    .books-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- HEADER -->
+  <header class="header">
+    <span class="eyebrow">18 Libros · Sabiduría Infinita</span>
+    <h1 class="title">Liderazgo<br><span>Millonario</span></h1>
+    <p class="subtitle">Una enseñanza diaria extraída de los libros que leen quienes construyen imperios reales.</p>
+  </header>
+
+  <!-- COUNTER ROW -->
+  <div class="counter-row">
+    <div class="counter">
+      Lección <strong id="lessonCount">—</strong>
+    </div>
+    <div class="streak">
+      <span class="streak-fire">🔥</span>
+      <span id="streakText">Empieza hoy</span>
+    </div>
+  </div>
+
+  <!-- LESSON CARD -->
+  <div class="card-wrap">
+    <div class="card" id="lessonCard">
+      <div class="card-deco">"</div>
+
+      <!-- SKELETON (loading) -->
+      <div class="loading-state" id="loadingState">
+        <div class="skeleton sk-line short" style="margin-bottom:20px;height:12px;width:35%"></div>
+        <div class="skeleton sk-line lg" style="width:100%"></div>
+        <div class="skeleton sk-line lg" style="width:90%"></div>
+        <div class="skeleton sk-line lg" style="width:75%;margin-bottom:28px"></div>
+        <div class="skeleton sk-line" style="width:100%"></div>
+        <div class="skeleton sk-line" style="width:80%"></div>
+        <div class="skeleton sk-line short" style="width:50%"></div>
+      </div>
+
+      <!-- CONTENT -->
+      <div class="content-state hidden" id="contentState">
+        <div class="lesson-category" id="lessonTheme">Liderazgo</div>
+        <p class="lesson-text" id="lessonText">Tu primera enseñanza aparecerá aquí.</p>
+        <div class="lesson-application">
+          <strong>⚡ Aplícalo hoy</strong>
+          <span id="lessonAction">Presiona el botón para comenzar.</span>
+        </div>
+        <div class="book-badge">
+          <span class="dot"></span>
+          <span id="lessonSource">—</span>
+        </div>
+      </div>
+
+      <!-- WELCOME STATE -->
+      <div class="content-state" id="welcomeState">
+        <div class="lesson-category">Listo para comenzar</div>
+        <p class="lesson-text">Cada clic te entrega una enseñanza única de los 18 libros más poderosos sobre liderazgo y creación de riqueza.</p>
+        <div class="lesson-application">
+          <strong>🎯 Tu compromiso</strong>
+          Lee una lección cada día. Aplícala antes de dormir. En 90 días habrás absorbido el ADN de los mejores líderes del mundo.
+        </div>
+        <div class="book-badge">
+          <span class="dot"></span>
+          <span>18 libros · enseñanzas infinitas</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ERROR -->
+  <div class="error-msg" id="errorMsg">
+    Ocurrió un error al generar la lección. Intenta de nuevo.
+  </div>
+
+  <!-- CTA BUTTON -->
+  <button class="btn-main" id="mainBtn" onclick="getLesson()">
+    <span class="btn-icon">⚡</span>
+    <span id="btnText">Recibir mi primera lección</span>
+  </button>
+
+  <!-- BOOKS GRID -->
+  <div class="books-section">
+    <div class="section-label">Biblioteca de referencia</div>
+    <div class="books-grid">
+      <div class="book-item"><span class="book-num">01</span><span class="book-name">Piense y Hágase Rico · Napoleon Hill</span></div>
+      <div class="book-item"><span class="book-num">02</span><span class="book-name">El Arte de la Guerra · Sun Tzu</span></div>
+      <div class="book-item"><span class="book-num">03</span><span class="book-name">Cómo Ganar Amigos · Dale Carnegie</span></div>
+      <div class="book-item"><span class="book-num">04</span><span class="book-name">Los 7 Hábitos · Stephen Covey</span></div>
+      <div class="book-item"><span class="book-num">05</span><span class="book-name">De Bueno a Excelente · Jim Collins</span></div>
+      <div class="book-item"><span class="book-num">06</span><span class="book-name">Liderazgo · Doris Kearns Goodwin</span></div>
+      <div class="book-item"><span class="book-num">07</span><span class="book-name">Steve Jobs · Walter Isaacson</span></div>
+      <div class="book-item"><span class="book-num">08</span><span class="book-name">El Ejecutivo al Minuto · Blanchard</span></div>
+      <div class="book-item"><span class="book-num">09</span><span class="book-name">Extreme Ownership · Jocko Willink</span></div>
+      <div class="book-item"><span class="book-num">10</span><span class="book-name">El Inversor Inteligente · Graham</span></div>
+      <div class="book-item"><span class="book-num">11</span><span class="book-name">Empresas que Sobresalen · Collins</span></div>
+      <div class="book-item"><span class="book-num">12</span><span class="book-name">Principios · Ray Dalio</span></div>
+      <div class="book-item"><span class="book-num">13</span><span class="book-name">Responsabilidad Extrema · Willink</span></div>
+      <div class="book-item"><span class="book-num">14</span><span class="book-name">Los Líderes Comen al Final · Sinek</span></div>
+      <div class="book-item"><span class="book-num">15</span><span class="book-name">El Marcador · Bill Walsh</span></div>
+      <div class="book-item"><span class="book-num">16</span><span class="book-name">Ganar · Jack Welch</span></div>
+      <div class="book-item"><span class="book-num">17</span><span class="book-name">Equipo de Equipos · McChrystal</span></div>
+      <div class="book-item"><span class="book-num">18</span><span class="book-name">Lo Difícil de las Cosas Difíciles · Horowitz</span></div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <p><span class="footer-gold">Liderazgo Millonario</span></p>
+    <p>Cada lección es única. Cada día un paso hacia la cima.</p>
+  </footer>
+
+</div>
+
+<script>
+// ── STATE ──
+let lessonCount = parseInt(localStorage.getItem('lm_count') || '0');
+let streakDays  = parseInt(localStorage.getItem('lm_streak') || '0');
+let lastDate    = localStorage.getItem('lm_lastdate') || '';
+let history     = JSON.parse(localStorage.getItem('lm_history') || '[]');
+let isLoading   = false;
+
+// ── INIT ──
+updateCounter();
+updateStreak();
+
+// ── STREAK LOGIC ──
+function updateStreak() {
+  const today = new Date().toISOString().split('T')[0];
+  if (lastDate === '') { streakDays = 0; }
+  else {
+    const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+    if (lastDate === yesterday) { /* streak continues */ }
+    else if (lastDate !== today) { streakDays = 0; }
+  }
+  const el = document.getElementById('streakText');
+  if (streakDays === 0) el.textContent = 'Empieza hoy';
+  else if (streakDays === 1) el.textContent = '1 día seguido';
+  else el.textContent = `${streakDays} días seguidos`;
+}
+
+function updateCounter() {
+  document.getElementById('lessonCount').textContent = lessonCount === 0 ? '—' : lessonCount;
+}
+
+// ── MAIN FUNCTION ──
+async function getLesson() {
+  if (isLoading) return;
+  isLoading = true;
+
+  const btn       = document.getElementById('mainBtn');
+  const btnText   = document.getElementById('btnText');
+  const errorMsg  = document.getElementById('errorMsg');
+  const card      = document.getElementById('lessonCard');
+
+  // Reset error
+  errorMsg.classList.remove('show');
+
+  // Button loading state
+  btn.disabled = true;
+  btnText.innerHTML = '<div class="spinner"></div> Generando tu lección...';
+  btn.querySelector('.btn-icon').style.display = 'none';
+
+  // Card flip out
+  card.classList.add('flipping');
+
+  // Show skeleton
+  setTimeout(() => {
+    document.getElementById('welcomeState').style.display = 'none';
+    document.getElementById('contentState').classList.add('hidden');
+    document.getElementById('loadingState').classList.add('active');
+    card.classList.remove('flipping');
+  }, 350);
+
+  try {
+    const recentHistory = history.slice(-30).join(' | ');
+
+    const systemPrompt = `Eres un mentor de liderazgo y riqueza de élite. Tu rol es entregar enseñanzas profundas, prácticas y poderosas extraídas de los 18 libros de liderazgo más influyentes del mundo. Cada respuesta debe sentirse como un consejo directo de un mentor millonario, no como texto genérico de un libro.`;
+
+    const userPrompt = `Genera UNA enseñanza de liderazgo y/o riqueza extraída de alguno de estos 18 libros:
+1. Piense y Hágase Rico (Napoleon Hill)
+2. El Arte de la Guerra (Sun Tzu)
+3. Cómo Ganar Amigos e Influir sobre las Personas (Dale Carnegie)
+4. Los 7 Hábitos de la Gente Altamente Efectiva (Stephen Covey)
+5. De Bueno a Excelente (Jim Collins)
+6. Liderazgo (Doris Kearns Goodwin)
+7. Steve Jobs (Walter Isaacson)
+8. El Ejecutivo al Minuto (Blanchard & Johnson)
+9. Extreme Ownership (Jocko Willink)
+10. El Inversor Inteligente (Benjamin Graham)
+11. Empresas que Sobresalen (Jim Collins)
+12. Principios: Vida y Trabajo (Ray Dalio)
+13. Responsabilidad Extrema (Jocko Willink)
+14. Los Líderes Comen al Final (Simon Sinek)
+15. El Marcador se Encarga de Sí Mismo (Bill Walsh)
+16. Ganar (Jack Welch)
+17. Equipo de Equipos (Stanley McChrystal)
+18. Lo Difícil de las Cosas Difíciles (Ben Horowitz)
+
+ENSEÑANZAS RECIENTES ENTREGADAS (NO REPETIR ESTAS IDEAS):
+${recentHistory || 'Ninguna todavía'}
+
+INSTRUCCIONES:
+- Elige un libro diferente o un ángulo diferente al de las enseñanzas recientes
+- La enseñanza debe ser PROFUNDA, no un cliché conocido
+- Debe ser accionable: algo que la persona pueda aplicar HOY o esta semana
+- Escríbela en español latino neutro, tono de mentor directo y poderoso
+- Responde ÚNICAMENTE en JSON con este formato exacto, sin texto adicional:
+
+{
+  "theme": "Una categoría en 1-3 palabras (ej: Mentalidad · Dinero, Estrategia, Equipos, etc.)",
+  "lesson": "La enseñanza principal en 2-4 oraciones. Directa, poderosa, sin relleno. Debe generar reflexión real.",
+  "action": "Acción concreta y específica que la persona puede hacer HOY para aplicar esta enseñanza. Máximo 2 oraciones.",
+  "source": "Título del libro · Autor"
+}`;
+
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-6",
+        max_tokens: 1000,
+        system: systemPrompt,
+        messages: [{ role: "user", content: userPrompt }]
+      })
+    });
+
+    if (!response.ok) throw new Error(`API error: ${response.status}`);
+
+    const data = await response.json();
+    const rawText = data.content.map(b => b.text || '').join('');
+
+    // Parse JSON safely
+    const jsonMatch = rawText.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error('No JSON in response');
+    const lesson = JSON.parse(jsonMatch[0]);
+
+    // Update history
+    history.push(lesson.lesson.substring(0, 80));
+    if (history.length > 50) history = history.slice(-50);
+    localStorage.setItem('lm_history', JSON.stringify(history));
+
+    // Update lesson count & streak
+    lessonCount++;
+    const today = new Date().toISOString().split('T')[0];
+    if (lastDate !== today) {
+      streakDays++;
+      lastDate = today;
+      localStorage.setItem('lm_lastdate', lastDate);
+      localStorage.setItem('lm_streak', streakDays.toString());
+    }
+    localStorage.setItem('lm_count', lessonCount.toString());
+
+    // Flip card and show content
+    card.classList.add('flipping');
+
+    setTimeout(() => {
+      document.getElementById('loadingState').classList.remove('active');
+      document.getElementById('contentState').classList.remove('hidden');
+
+      document.getElementById('lessonTheme').textContent = lesson.theme;
+      document.getElementById('lessonText').textContent  = lesson.lesson;
+      document.getElementById('lessonAction').textContent = lesson.action;
+      document.getElementById('lessonSource').textContent = lesson.source;
+
+      updateCounter();
+      updateStreak();
+
+      card.classList.remove('flipping');
+    }, 350);
+
+    // Reset button
+    btn.disabled = false;
+    btnText.textContent = 'Nueva lección';
+    btn.querySelector('.btn-icon').style.display = '';
+
+  } catch (err) {
+    console.error(err);
+    card.classList.remove('flipping');
+    document.getElementById('loadingState').classList.remove('active');
+    document.getElementById('welcomeState').style.display = 'block';
+
+    errorMsg.textContent = 'No se pudo generar la lección. Verifica tu conexión e intenta de nuevo.';
+    errorMsg.classList.add('show');
+
+    btn.disabled = false;
+    btnText.textContent = lessonCount === 0 ? 'Recibir mi primera lección' : 'Intentar de nuevo';
+    btn.querySelector('.btn-icon').style.display = '';
+  }
+
+  isLoading = false;
+}
+</script>
+</body>
+</html>
